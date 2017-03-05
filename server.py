@@ -3,6 +3,7 @@ import json
 import requests
 from flask import Flask, jsonify, request
 
+
 VERIFY_TOKEN = 'EAALRGUp9UBsBAKGXNOmu8yZCLihG92whrIu6ALq3edWz4ZAZC8LVKM8w97ZBYbBjPyvK6v8jxD0vlsAdqCZBLrbZBdIOxjsoqSH361bP4qDmVDAwLToMsErWGm4zqqZB2oTLVw32xpCz8zi25KxzzkfUGQdciQNRtZBvSn92eo0GdgZDZD'
 
 app = Flask(__name__)
@@ -72,6 +73,7 @@ def send_message(recipient_id, message_text):
     if r.status_code != 200:
         log(r.status_code)
         log(r.text)
+    
 
 def log(message):  # simple wrapper for logging to stdout on heroku
     print str(message)

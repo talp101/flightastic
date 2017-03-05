@@ -12,7 +12,7 @@ result = flights_service.get_result(
     inbounddate='2017-04-13',
     stops=0,
     adults=2).parsed
-
+    
 # print(result)
 trips = result['Itineraries']
 print trips[0]['PricingOptions'][0]['Price']
