@@ -2,7 +2,7 @@ import sys
 import json
 import requests
 from flask import Flask, jsonify, request
-
+from flightatstic_search import FlightasticSearch
 
 VERIFY_TOKEN = 'EAALRGUp9UBsBAKGXNOmu8yZCLihG92whrIu6ALq3edWz4ZAZC8LVKM8w97ZBYbBjPyvK6v8jxD0vlsAdqCZBLrbZBdIOxjsoqSH361bP4qDmVDAwLToMsErWGm4zqqZB2oTLVw32xpCz8zi25KxzzkfUGQdciQNRtZBvSn92eo0GdgZDZD'
 
@@ -51,6 +51,25 @@ def webhook():
 
     return "ok", 200
 
+@app.route('/search_flight', methods=['POST'])
+def search_flight():
+    data = request.get_json()
+    search = FlightasticSearch(originplace=data['originplace'],
+                 destinationplace=data['destinationplace'],
+                 outbounddate=data['outbounddate'],
+                 inbounddate=data['inbounddate'],
+                 stops=data['stops'],
+                 adults=data['adults'])
+    minimal_result = search.get_minimal_flight()
+    flight_price = minimal_result['PricingOptions'][0]['Price']
+    found_legit_flight = flight_price < data['max_price']
+    response = jsonify({'found': found_legit_flight, 'minimal_price': flight_price})
+    if found_legit_flight:
+        message_text = minimal_result['PricingOptions'][0]['DeeplinkUrl'] + '\n' +  unicode(flight_price)
+        # send_message(data['fb_id'], message_text)
+        return response
+    return response
+
 def send_message(recipient_id, message_text):
 
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
@@ -80,4 +99,4 @@ def log(message):  # simple wrapper for logging to stdout on heroku
     sys.stdout.flush()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)

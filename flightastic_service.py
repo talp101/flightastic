@@ -15,9 +15,10 @@ result = flights_service.get_result(
     
 # print(result)
 trips = result['Itineraries']
-print trips[0]['PricingOptions'][0]['Price']
+# print trips[0]
+# print trips[0]['PricingOptions'][0]['Price']
 # smallest_prices =  [sorted(p['PricingOptions'], key=lambda k: k['Price'])[0] for p in trips]
 # smallest_price = sorted(smallest_prices, key=lambda k: k['Price'])[0]
 # print smallest_price
-# with open('output.json', 'w') as out:
-    # out.write(json.dumps(result))
+with open('output.json', 'w') as out:
+    out.write(json.dumps(trips[0]))
