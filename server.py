@@ -53,7 +53,7 @@ def webhook():
 
 def send_message(recipient_id, message_text):
 
-    log(u"sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
+    log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
 
     params = {
         "access_token": VERIFY_TOKEN
@@ -76,7 +76,7 @@ def send_message(recipient_id, message_text):
     
 
 def log(message):  # simple wrapper for logging to stdout on heroku
-    print unicode(message)
+    print message
     sys.stdout.flush()
 
 if __name__ == '__main__':
