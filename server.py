@@ -54,7 +54,7 @@ def search_flight():
     response = jsonify({'found': found_legit_flight, 'minimal_price': flight_price})
     if found_legit_flight:
         full_purcashe_url = minimal_result['PricingOptions'][0]['DeeplinkUrl']
-        short_url = requests.post("https://www.googleapis.com/urlshortener/v1/url", data={"longUrl": full_purcashe_url}).json()['id']
+        short_url = requests.post("https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyDojzxFaQMBKigpppEUBMe6nr8hBxB8Fi8", data={"longUrl": full_purcashe_url}).json()['id']
         message_text =  short_url+ '\n' +  unicode(flight_price)
         send_message(data['fb_id'], message_text)
     return response
@@ -74,7 +74,7 @@ def send_message(recipient_id, message_text):
             "text": message_text
         }
     })
-    r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
+    r =requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
     if r.status_code != 200:
         log(r.status_code)
         log(r.text)
