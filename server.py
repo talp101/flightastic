@@ -53,7 +53,9 @@ def search_flight():
     found_legit_flight = flight_price < data['max_price']
     response = jsonify({'found': found_legit_flight, 'minimal_price': flight_price})
     if found_legit_flight:
-        message_text = minimal_result['PricingOptions'][0]['DeeplinkUrl'] + '\n' +  unicode(flight_price)
+        full_purcashe_url = minimal_result['PricingOptions'][0]['DeeplinkUrl']
+        short_url = requests.post("https://www.googleapis.com/urlshortener/v1/url", data={"longUrl": full_purcashe_url}).json()['id']
+        message_text =  short_url+ '\n' +  unicode(flight_price)
         send_message(data['fb_id'], message_text)
     return response
 
