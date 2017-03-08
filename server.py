@@ -1,12 +1,49 @@
 import sys
 import json
 import requests
+from wit import Wit
 from flask import Flask, jsonify, request
 from flightastic.flightatstic_search import FlightasticSearch
 
+FLIGHTASTIC_SCHEDULER_URL = "https://flightastic-scheduler.herokuapp.com/search/"
+
 VERIFY_TOKEN = 'EAALRGUp9UBsBAKGXNOmu8yZCLihG92whrIu6ALq3edWz4ZAZC8LVKM8w97ZBYbBjPyvK6v8jxD0vlsAdqCZBLrbZBdIOxjsoqSH361bP4qDmVDAwLToMsErWGm4zqqZB2oTLVw32xpCz8zi25KxzzkfUGQdciQNRtZBvSn92eo0GdgZDZD'
+WIT_ACCESS_TOKEN = 'TKYOXEVL5N37NKAL745KVAJ6XTRODFWS'
+
 
 app = Flask(__name__)
+
+def search_flight_wit(session_id, context):
+    log(json.dumps(context))
+    flight_search_object = {
+        'fbId':session_id,
+        'max_price':context['max_price'],
+        'originplace':"TLV-sky",
+        'destinationplace':"LOND-sky",
+        'outbounddate':context['outbounddate'],
+        'inbounddate':context['inbounddate'],
+        'stops':0,
+        'adults':context['adults']
+    }
+    response = requests.post(url=FLIGHTASTIC_SCHEDULER_URL, data=json.dumps(context), headers = {"Content-Type": "application/json"})
+    log(response.content)
+
+def say(session_id, context, msg):
+    global messageToSend
+    messageToSend = str(msg)
+    global done
+    done = True
+
+actions = {
+    'say':say,
+    'search_flight':''
+}
+
+
+
+wit_client = Wit(WIT_ACCESS_TOKEN, actions)    
+
+
 
 @app.route('/', methods=['GET'])
 def verify():
@@ -35,8 +72,10 @@ def webhook():
                     sender_id = messaging_event["sender"]["id"]        # the facebook ID of the person sending you the message
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
-                    log(sender_id)
-                    send_message(sender_id, message_text)
+                    wit_client.run_actions(sender_id, message_text, {})
+                    if done:
+                        log(sender_id)
+                        send_message(sender_id, message_text)
     return "ok", 200
 
 @app.route('/search_flight', methods=['POST'])
