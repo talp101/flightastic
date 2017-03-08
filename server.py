@@ -81,9 +81,9 @@ def webhook():
                     message_text = messaging_event["message"]["text"]  # the message's text
                     log(sender_id)
                     wit_client.run_actions(sender_id, message_text, {})
-                    if done:
-                        log(sender_id)
-                        send_message(sender_id, message_text)
+                    # if done:
+                    #     log(sender_id)
+                    #     send_message(sender_id, message_text)
     return "ok", 200
 
 
