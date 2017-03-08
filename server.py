@@ -37,8 +37,14 @@ def say(session_id, context, msg):
     done = True
 
 
+def send(request, response):
+    fb_id = request['session_id']
+    text = response['text']
+    send_message(fb_id, text)
+
 actions = {
     'say': say,
+    'send':send,
     'search_flight': search_flight_wit
 }
 
@@ -73,6 +79,7 @@ def webhook():
                     recipient_id = messaging_event["recipient"][
                         "id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
+                    log(sender_id)
                     wit_client.run_actions(sender_id, message_text, {})
                     if done:
                         log(sender_id)
