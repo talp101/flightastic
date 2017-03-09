@@ -58,7 +58,7 @@ def merge(request):
     session_context = extract_entity_to_context(session_context, entities, 'max_price', 'amount_of_money')
     log('after extract')
     log(json.dumps(session_context))
-    return context
+    return sessions_context
 
 
 def search_flight_wit(request):
