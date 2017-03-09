@@ -1,3 +1,4 @@
+import random
 import sys
 import json
 import requests
@@ -35,15 +36,17 @@ def extract_entity_to_context(context, entities, entity_key, entity_type):
 def merge(request):
     context = request['context']
     log(json.dumps(context))
-    entities = request['entities']
-    context = extract_entity_to_context(context, entities, 'destinationplace', 'location')
-    if 'outbounddate' not in context:
-       context =  extract_entity_to_context(context, entities, 'outbounddate', 'datetime')
-    else:
-        context = extract_entity_to_context(context, entities, 'inbounddate', 'datetime')
-    context = extract_entity_to_context(context, entities, 'adults', 'number')
-    context = extract_entity_to_context(context, entities, 'max_price', 'amount_of_money')
-    log('after extract')
+    context['*' * random.choice(range(1, 10))] = 'test'
+    # context = request['context']
+    # entities = request['entities']
+    # context = extract_entity_to_context(context, entities, 'destinationplace', 'location')
+    # if 'outbounddate' not in context:
+    #    context =  extract_entity_to_context(context, entities, 'outbounddate', 'datetime')
+    # else:
+    #     context = extract_entity_to_context(context, entities, 'inbounddate', 'datetime')
+    # context = extract_entity_to_context(context, entities, 'adults', 'number')
+    # context = extract_entity_to_context(context, entities, 'max_price', 'amount_of_money')
+    # log('after extract')
     log(json.dumps(context))
     return context
 
