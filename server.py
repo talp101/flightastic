@@ -33,7 +33,7 @@ def merge(request):
     context = request['context']
     entities = request['entities']
     extract_entity_to_context(context, entities, 'destinationplace', 'location')
-    if not context['outbounddate']:
+    if 'outbounddate' not in context:
         extract_entity_to_context(context, entities, 'outbounddate', 'datetime')
     else:
         extract_entity_to_context(context, entities, 'inbounddate', 'datetime')
