@@ -14,6 +14,15 @@ WIT_ACCESS_TOKEN = 'TKYOXEVL5N37NKAL745KVAJ6XTRODFWS'
 
 app = Flask(__name__)
 
+sessions_context = {}
+
+
+def find_or_create_session_context(session_id):
+    try:
+        return sessions_context[session_id]
+    except:
+        sessions_context[session_id] = {}
+
 
 def first_entity_value(entities, entity):
     if entity not in entities:
@@ -30,24 +39,23 @@ def extract_entity_to_context(context, entities, entity_key, entity_type):
         context[entity_key] = entity_value
     log('inside func')
     log(json.dumps(context))
-    return context
 
 
 def merge(request):
+    log(json.dumps(request))
+    session_context = find_or_create_session_context(request['session_id'])
+    log(json.dumps(session_context))
     context = request['context']
-    log(json.dumps(context))
-    context['*' * random.choice(range(1, 10))] = 'test'
-    # context = request['context']
-    # entities = request['entities']
-    # context = extract_entity_to_context(context, entities, 'destinationplace', 'location')
-    # if 'outbounddate' not in context:
-    #    context =  extract_entity_to_context(context, entities, 'outbounddate', 'datetime')
-    # else:
-    #     context = extract_entity_to_context(context, entities, 'inbounddate', 'datetime')
-    # context = extract_entity_to_context(context, entities, 'adults', 'number')
-    # context = extract_entity_to_context(context, entities, 'max_price', 'amount_of_money')
-    # log('after extract')
-    log(json.dumps(context))
+    entities = request['entities']
+    extract_entity_to_context(sessions_context, entities, 'destinationplace', 'location')
+    if 'outbounddate' not in context:
+       extract_entity_to_context(sessions_context, entities, 'outbounddate', 'datetime')
+    else:
+        extract_entity_to_context(sessions_context, entities, 'inbounddate', 'datetime')
+    extract_entity_to_context(sessions_context, entities, 'adults', 'number')
+    extract_entity_to_context(sessions_context, entities, 'max_price', 'amount_of_money')
+    log('after extract')
+    log(json.dumps(session_context))
     return context
 
 
@@ -80,7 +88,7 @@ def send(request, response):
 
 actions = {
     'send': send,
-    'merge':merge,
+    'merge': merge,
     'search_flight': search_flight_wit
 }
 
