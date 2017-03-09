@@ -22,6 +22,7 @@ def find_or_create_session_context(session_id):
         return sessions_context[session_id]
     except:
         sessions_context[session_id] = {}
+        return sessions_context[session_id]
 
 
 def first_entity_value(entities, entity):
