@@ -37,6 +37,8 @@ def first_entity_value(entities, entity):
 def extract_entity_to_context(session_context, context,entities, entity_key, entity_type):
     entity_value = first_entity_value(entities, entity_type)
     if entity_value:
+        if entity_type == 'datetime':
+            entity_value = entity_value.split('T')[0]
         context[entity_key] = entity_value
         session_context[entity_key] = entity_value
     return session_context, context
@@ -49,12 +51,12 @@ def merge(request):
     context = request['context']
     entities = request['entities']
     session_context, context = extract_entity_to_context(session_context,context, entities, 'destinationplace', 'location')
-    if 'outbounddate' not in context:
+    if 'outbounddate' not in session_context:
        session_context, context = extract_entity_to_context(session_context,context, entities, 'outbounddate', 'datetime')
     else:
         session_context, context = extract_entity_to_context(session_context,context, entities, 'inbounddate', 'datetime')
     session_context, context = extract_entity_to_context(session_context,context, entities, 'adults', 'number')
-    session_context, context = extract_entity_to_context(session_context,context, entities, 'max_price', 'amount_of_money')
+    session_context, context = extract_entity_to_context(session_context,context, entities, 'max_price', 'number')
     log('after extract')
     log(json.dumps(session_context))
     log(json.dumps(context))
@@ -127,9 +129,6 @@ def webhook():
                     message_text = messaging_event["message"]["text"]  # the message's text
                     log(sender_id)
                     wit_client.run_actions(sender_id, message_text, {})
-                    # if done:
-                    #     log(sender_id)
-                    #     send_message(sender_id, message_text)
     return "ok", 200
 
 
