@@ -27,6 +27,8 @@ def extract_entity_to_context(context, entities, entity_key, entity_type):
     entity_value = first_entity_value(entities, entity_type)
     if entity_value:
         context[entity_key] = entity_value
+    log('inside func')
+    log(json.dumps(context))
     return context
 
 
@@ -41,6 +43,7 @@ def merge(request):
         context = extract_entity_to_context(context, entities, 'inbounddate', 'datetime')
     context = extract_entity_to_context(context, entities, 'adults', 'number')
     context = extract_entity_to_context(context, entities, 'max_price', 'amount_of_money')
+    log('after extract')
     log(json.dumps(context))
     return context
 
