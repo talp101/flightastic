@@ -56,7 +56,7 @@ def merge(request):
     else:
         session_context, context = extract_entity_to_context(session_context,context, entities, 'inbounddate', 'datetime')
     session_context, context = extract_entity_to_context(session_context,context, entities, 'adults', 'number')
-    session_context, context = extract_entity_to_context(session_context,context, entities, 'max_price', 'number')
+    session_context, context = extract_entity_to_context(session_context,context, entities, 'max_price', 'amount_of_money')
     log('after extract')
     log(json.dumps(session_context))
     log(json.dumps(context))
