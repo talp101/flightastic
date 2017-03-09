@@ -72,6 +72,7 @@ def send(request, response):
 
 actions = {
     'send': send,
+    'merge':merge,
     'search_flight': search_flight_wit
 }
 
