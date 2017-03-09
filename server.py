@@ -32,6 +32,7 @@ def extract_entity_to_context(context, entities, entity_key, entity_type):
 
 def merge(request):
     context = request['context']
+    log(json.dumps(context))
     entities = request['entities']
     context = extract_entity_to_context(context, entities, 'destinationplace', 'location')
     if 'outbounddate' not in context:
