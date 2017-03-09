@@ -24,9 +24,9 @@ def first_entity_value(entities, entity):
 
 
 def extract_entity_to_context(context, entities, entity_key, entity_type):
-    entity_key = first_entity_value(entities, entity_type)
-    if entity_key:
-        context[entity_key] = entity_key
+    entity_value = first_entity_value(entities, entity_type)
+    if entity_value:
+        context[entity_key] = entity_value
 
 
 def merge(request):
