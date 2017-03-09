@@ -8,13 +8,47 @@ from flightastic.flightatstic_search import FlightasticSearch
 FLIGHTASTIC_SCHEDULER_URL = "https://flightastic-scheduler.herokuapp.com/search/"
 
 VERIFY_TOKEN = 'EAALRGUp9UBsBAKGXNOmu8yZCLihG92whrIu6ALq3edWz4ZAZC8LVKM8w97ZBYbBjPyvK6v8jxD0vlsAdqCZBLrbZBdIOxjsoqSH361bP4qDmVDAwLToMsErWGm4zqqZB2oTLVw32xpCz8zi25KxzzkfUGQdciQNRtZBvSn92eo0GdgZDZD'
+GOOGLE_API_KEY = 'AIzaSyDojzxFaQMBKigpppEUBMe6nr8hBxB8Fi8'
 WIT_ACCESS_TOKEN = 'TKYOXEVL5N37NKAL745KVAJ6XTRODFWS'
 
 app = Flask(__name__)
 
 
-def search_flight_wit(session_id, context):
+def first_entity_value(entities, entity):
+    if entity not in entities:
+        return None
+    value = entities[entity][0]['value']
+    if not value:
+        return None
+    return value['value'] if isinstance(value, dict) else value
+
+
+def extract_entity_to_context(context, entities, entity_key, entity_type):
+    entity_key = first_entity_value(entities, entity_type)
+    if entity_key:
+        context[entity_key] = entity_key
+
+
+def merge(request):
+    context = request['context']
+    entities = request['entities']
+    extract_entity_to_context(context, entities, 'destinationplace', 'location')
+    if not context['outbounddate']:
+        extract_entity_to_context(context, entities, 'outbounddate', 'datetime')
+    else:
+        extract_entity_to_context(context, entities, 'inbounddate', 'datetime')
+    extract_entity_to_context(context, entities, 'adults', 'number')
+    extract_entity_to_context(context, entities, 'max_price', 'amount_of_money')
     log(json.dumps(context))
+    return context
+
+
+def search_flight_wit(request):
+    log('started search flight wit')
+    log(json.dumps(request))
+    context = request['context']
+    entities = request['entities']
+    session_id = request['session_id']
     flight_search_object = {
         'fbId': session_id,
         'max_price': context['max_price'],
@@ -30,21 +64,14 @@ def search_flight_wit(session_id, context):
     log(response.content)
 
 
-def say(session_id, context, msg):
-    global messageToSend
-    messageToSend = str(msg)
-    global done
-    done = True
-
-
 def send(request, response):
     fb_id = request['session_id']
     text = response['text']
     send_message(fb_id, text)
 
+
 actions = {
-    'say': say,
-    'send':send,
+    'send': send,
     'search_flight': search_flight_wit
 }
 
@@ -102,10 +129,8 @@ def search_flight():
     response = jsonify({'found': found_legit_flight, 'minimal_price': flight_price})
     if found_legit_flight:
         full_purcashe_url = minimal_result['PricingOptions'][0]['DeeplinkUrl']
-        short_url = \
-        requests.post("https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyDojzxFaQMBKigpppEUBMe6nr8hBxB8Fi8",
-                      data=json.dumps({"longUrl": full_purcashe_url}),
-                      headers={"Content-Type": "application/json"}).json()['id']
+        short_url = requests.post("https://www.googleapis.com/urlshortener/v1/url?key={key}".format(key=GOOGLE_API_KEY),
+                                  json={"longUrl": full_purcashe_url}, ).json()['id']
         message_text = short_url + '\n' + unicode(flight_price)
         send_message(data['fb_id'], message_text)
     return response
