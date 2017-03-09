@@ -34,13 +34,12 @@ def first_entity_value(entities, entity):
     return value['value'] if isinstance(value, dict) else value
 
 
-def extract_entity_to_context(context, entities, entity_key, entity_type):
+def extract_entity_to_context(session_context, context,entities, entity_key, entity_type):
     entity_value = first_entity_value(entities, entity_type)
     if entity_value:
         context[entity_key] = entity_value
-    log('inside func')
-    log(json.dumps(context))
-    return context
+        session_context[entity_key] = entity_value
+    return session_context, context
 
 
 def merge(request):
@@ -49,16 +48,17 @@ def merge(request):
     log(json.dumps(session_context))
     context = request['context']
     entities = request['entities']
-    session_context = extract_entity_to_context(session_context, entities, 'destinationplace', 'location')
+    session_context, context = extract_entity_to_context(session_context,context, entities, 'destinationplace', 'location')
     if 'outbounddate' not in context:
-       session_context = extract_entity_to_context(session_context, entities, 'outbounddate', 'datetime')
+       session_context, context = extract_entity_to_context(session_context,context, entities, 'outbounddate', 'datetime')
     else:
-        session_context = extract_entity_to_context(session_context, entities, 'inbounddate', 'datetime')
-    session_context = extract_entity_to_context(session_context, entities, 'adults', 'number')
-    session_context = extract_entity_to_context(session_context, entities, 'max_price', 'amount_of_money')
+        session_context, context = extract_entity_to_context(session_context,context, entities, 'inbounddate', 'datetime')
+    session_context, context = extract_entity_to_context(session_context,context, entities, 'adults', 'number')
+    session_context, context = extract_entity_to_context(session_context,context, entities, 'max_price', 'amount_of_money')
     log('after extract')
     log(json.dumps(session_context))
-    return sessions_context
+    log(json.dumps(context))
+    return context
 
 
 def search_flight_wit(request):
