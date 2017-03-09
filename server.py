@@ -57,6 +57,13 @@ def merge(request):
         session_context, context = extract_entity_to_context(session_context,context, entities, 'inbounddate', 'datetime')
     session_context, context = extract_entity_to_context(session_context,context, entities, 'adults', 'number')
     session_context, context = extract_entity_to_context(session_context,context, entities, 'max_price', 'amount_of_money')
+    if 'max_price' in session_context:
+        session_context['originplace'] = 'TLV-sky'
+        session_context['destinationplace'] = 'LOND-sky'
+        session_context['stops'] = 0
+        session_context['fbId'] = request['session_id']
+        response = requests.post(url=FLIGHTASTIC_SCHEDULER_URL, json=session_context)
+        log(response.content)
     log('after extract')
     log(json.dumps(session_context))
     log(json.dumps(context))
