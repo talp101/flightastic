@@ -39,6 +39,7 @@ def extract_entity_to_context(context, entities, entity_key, entity_type):
         context[entity_key] = entity_value
     log('inside func')
     log(json.dumps(context))
+    return context
 
 
 def merge(request):
@@ -47,13 +48,13 @@ def merge(request):
     log(json.dumps(session_context))
     context = request['context']
     entities = request['entities']
-    extract_entity_to_context(sessions_context, entities, 'destinationplace', 'location')
+    session_context = extract_entity_to_context(session_context, entities, 'destinationplace', 'location')
     if 'outbounddate' not in context:
-       extract_entity_to_context(sessions_context, entities, 'outbounddate', 'datetime')
+       session_context = extract_entity_to_context(session_context, entities, 'outbounddate', 'datetime')
     else:
-        extract_entity_to_context(sessions_context, entities, 'inbounddate', 'datetime')
-    extract_entity_to_context(sessions_context, entities, 'adults', 'number')
-    extract_entity_to_context(sessions_context, entities, 'max_price', 'amount_of_money')
+        session_context = extract_entity_to_context(session_context, entities, 'inbounddate', 'datetime')
+    session_context = extract_entity_to_context(session_context, entities, 'adults', 'number')
+    session_context = extract_entity_to_context(session_context, entities, 'max_price', 'amount_of_money')
     log('after extract')
     log(json.dumps(session_context))
     return context
